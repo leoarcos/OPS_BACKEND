@@ -3,7 +3,7 @@ const { getIO } = require('../socket');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
-
+ 
 
 async function listUsers(req, res) {
   try {
@@ -47,7 +47,7 @@ async function createUser(req, res) {
     res.status(201).json(newUser);
   } catch (err) {
     console.error('Error en register:', err);
-    res.status(500).json({ error: 'Error al registrar usuario' });
+    res.status(500).json({ error: 'Error al registrar usuario',  response: err.message });
   }
 }
 
@@ -78,16 +78,18 @@ async function deleteUser(req, res) {
 }
 
 async function login(req, res) {
-  const { email, password } = req.body;
+  console.log(req.body);
+  const { username, password } = req.body;
 
   try {
-    const user = await userService.getUserByEmail(email);
+    const user = await userService.getUserByEmail(username);
+    console.log(user);
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '12h' });
-    res.json({ token });
+    res.json({ token, user });
   } catch (err) {
     console.error('Error en login:', err);
     res.status(500).json({ error: 'Error al iniciar sesión' });

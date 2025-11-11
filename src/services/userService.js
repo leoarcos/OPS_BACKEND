@@ -20,7 +20,8 @@ async function deleteUser(id) {
   return result.affectedRows > 0;
 }
 async function getUserByEmail(email) {
-  const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+  console.log(email);
+  const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [email]);
   return rows[0];
 }
 
