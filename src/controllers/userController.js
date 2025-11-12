@@ -15,20 +15,8 @@ async function listUsers(req, res) {
   }
 }
 
-async function getUser(req, res) {
-  const id = req.params.id;
-  try {
-    const user = await userService.getUserById(id);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-    res.json(user);
-  } catch (err) {
-    console.error('Error getUser:', err);
-    res.status(500).json({ error: 'Error al obtener usuario' });
-  }
-}
-
 async function createUser(req, res) {
-  const { username, password, names, pais, departamento, municipio, email, phone, institute, address } = req.body;
+  const { username, password, names, pais, departamento, municipio, email, phone, institute, address, tipo_id, num_id, rol } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10); // Hashing de la contraseña
@@ -42,7 +30,10 @@ async function createUser(req, res) {
       email,
       phone,
       institute,
-      address
+      address,
+      tipo_id,
+      num_id,
+      rol
     });
     res.status(201).json(newUser);
   } catch (err) {
@@ -50,9 +41,23 @@ async function createUser(req, res) {
     res.status(500).json({ error: 'Error al registrar usuario',  response: err.message });
   }
 }
+async function getUser(req, res) {
+  const id = req.params.id;
+  try {
+    const user = await userService.getUserById(id);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json(user);
+  } catch (err) {
+    console.error('Error getUser:', err);
+    res.status(500).json({ error: 'Error al obtener usuario' });
+  }
+}
+
 
 async function updateUser(req, res) {
+  console.log('update');
   const id = req.params.id;
+  console.log(req.params);
   try {
     const success = await userService.updateUser(id, req.body);
     if (!success) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -61,6 +66,34 @@ async function updateUser(req, res) {
   } catch (err) {
     console.error('Error updateUser:', err);
     res.status(500).json({ error: 'Error al actualizar usuario' });
+  }
+}
+
+async function darBajaUser(req, res) {
+  console.log('dar baja ');
+  const id = req.params.id; 
+  try {
+    const success = await userService.darBajaUser(id, req.body);
+    if (!success) return res.status(404).json({ error: 'Usuario no encontrado' });
+    getIO().emit('userChanged');
+    res.json({ message: 'Usuario dado de baja' });
+  } catch (err) {
+    console.error('Error updateUser:', err);
+    res.status(500).json({ error: 'Error al dar baja al usuario' });
+  }
+}
+
+async function activarUser(req, res) {
+  console.log('dar baja ');
+  const id = req.params.id; 
+  try {
+    const success = await userService.activarUser(id, req.body);
+    if (!success) return res.status(404).json({ error: 'Usuario no encontrado' });
+    getIO().emit('userChanged');
+    res.json({ message: 'Usuario activado' });
+  } catch (err) {
+    console.error('Error updateUser:', err);
+    res.status(500).json({ error: 'Error al activar usuario' });
   }
 }
 
@@ -84,7 +117,7 @@ async function login(req, res) {
   try {
     const user = await userService.getUserByEmail(username);
     console.log(user);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.password)) || user.state!=1) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
@@ -101,6 +134,8 @@ module.exports = {
   getUser,
   createUser,
   updateUser,
+  darBajaUser,
+  activarUser,
   deleteUser,
   login
 };
