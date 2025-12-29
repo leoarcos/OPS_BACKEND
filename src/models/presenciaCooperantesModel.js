@@ -9,16 +9,24 @@ const PresenciaCooperanteModel = {
   getAll() {
     return pool.query('SELECT * FROM presencia_cooperantes ORDER BY id DESC');
   },
+  getServices() {
+     
+    return pool.query('SELECT * FROM servicios ');
+  },
+
+  getDataCooperante(id) {
+    return pool.query('SELECT * FROM presencia_cooperantes WHERE id_cooperante = ?', [parseInt(id)]);
+  },
 
   getById(id) {
     return pool.query('SELECT * FROM presencia_cooperantes WHERE id = ?', [id]);
   },
 
   create(data) {
-    const { id_cooperante, pais, dpto, mnpo, services, address } = data;
+    const { id_cooperante, pais, dpto, mnpo, services, address, phone } = data;
     return pool.query(
-      'INSERT INTO presencia_cooperantes (id_cooperante, pais, dpto, mnpo, services, address) VALUES (?, ?, ?, ?, ?, ?)',
-      [id_cooperante, pais, dpto, mnpo, services, address]
+      'INSERT INTO presencia_cooperantes (id_cooperante, pais, dpto, mnpo, services, address, phone) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [id_cooperante, pais, dpto, mnpo, JSON.stringify(services), address, phone]
     );
   },
 

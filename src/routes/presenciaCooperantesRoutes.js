@@ -4,7 +4,8 @@ const controller = require('../controllers/presenciaCooperantesController');
 const authenticateToken = require('../middleware/authMiddleware');
 
 router.get('/', authenticateToken, controller.getAllData);
-router.get('/:id', authenticateToken, controller.getDataById);
+router.get('/:id', authenticateToken, controller.getDataCooperante);
+router.get('/services/list', authenticateToken, controller.getServices);
 router.post('/register',  authenticateToken, controller.create);
 router.put('/edit/:id',  authenticateToken, controller.update);
 router.delete('/:id',  authenticateToken, controller.deletaData);

@@ -10,7 +10,29 @@ async function getAllData(req, res) {
     res.status(500).json({ error: 'Error al obtener presencia cooperantes' });
   }
 }
+async function getServices(req, res) {
+    console.log('ssss');
+  try {
+    const data = await service.getServices();
+    res.json(data);
+  } catch (err) {
+    console.error('Error list services:', err);
+    res.status(500).json({ error: 'Error al obtener servicios' });
+  }
+}
 
+async function getDataCooperante(req, res) {
+  const id = req.params.id;
+  try {
+    const user = await service.getDataCooperante(id);
+    
+    if (!user) return res.status(404).json({ error: 'cooperante no encontrado' });
+    res.json(user);
+  } catch (err) {
+    console.error('Error get cooperante presencia :', err);
+    res.status(500).json({ error: 'Error al obtener presencia  cooperante' });
+  }
+}
 async function getDataById(req, res) {
   const id = req.params.id;
   try {
@@ -25,8 +47,7 @@ async function getDataById(req, res) {
 
 async function update(req, res) {
   console.log('update');
-  const id = req.params.id;
-  console.log(req.params);
+  const id = req.params.id; 
   try {
     const success = await service.update(id, req.body);
     if (!success) return res.status(404).json({ error: 'Cooperante no encontrado' });
@@ -51,8 +72,8 @@ async function deletaData(req, res) {
   }
 }
 async function create(req, res) {
-  const { id_cooperante, pais, dpto, mnpo, services, address } = req.body;
-
+  const { id_cooperante, pais, dpto, mnpo, services, address, phone } = req.body;
+    console.log(req);
   try {
      
     const newData = await service.create({
@@ -61,7 +82,8 @@ async function create(req, res) {
       dpto,
       mnpo,
       services,
-      address
+      address,
+      phone
     });
     res.status(201).json(newData);
   } catch (err) {
@@ -77,4 +99,6 @@ module.exports = {
   update,
   deletaData,
   create, 
+  getDataCooperante,
+  getServices
 };

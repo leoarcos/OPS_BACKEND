@@ -9,6 +9,17 @@ async function getAllData() {
   return rows;
 }
 
+async function getServices() {
+  const [rows] = await Model.getServices();
+  return rows;
+}
+
+async function getDataCooperante(id) {
+    
+  const [rows] = await Model.getDataCooperante(id);
+  return rows;
+}
+
 async function getDataById(id) {
   const [rows] = await Model.getById(id);
   return rows[0];
@@ -38,5 +49,7 @@ module.exports = {
   getDataById,
   create,
   update,
-  deleteData
+  deleteData,
+  getDataCooperante,
+  getServices
 };
